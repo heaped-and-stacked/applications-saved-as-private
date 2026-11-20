@@ -1,0 +1,12 @@
+node_modules
+dist
+
+# Local development notes stay on this machine
+docs/
+AGENTS.md
+CLAUDE.md
+.claude/
+
+# Your data never goes in git
+asap-*.json
+job-hunt-*.json

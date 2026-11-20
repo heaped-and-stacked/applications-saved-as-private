@@ -1,0 +1,30 @@
+{
+  "name": "asap",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Applications Saved As Private: a job application tracker where your data is one JSON file you own.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/pages.mjs",
+    "serve": "vite preview",
+    "test": "vitest run",
+    "lint": "oxlint src",
+    "check": "tsc"
+  },
+  "devDependencies": {
+    "@solidjs/diagnostics": "^2.0.0",
+    "@solidjs/vite-plugin": "^3.0.0",
+    "eslint-plugin-solid": "~0.20.0",
+    "oxlint": "~1.92.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.0.0"
+  },
+  "dependencies": {
+    "@fontsource/outfit": "^5.3.0",
+    "@solidjs/router": "^2.0.0",
+    "@solidjs/web": "^2.0.0",
+    "solid-js": "^2.0.0"
+  }
+}
