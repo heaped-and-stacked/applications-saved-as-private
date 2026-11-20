@@ -31,7 +31,7 @@ syncs it through the Google account you sign in with.
 ## Where your data lives
 
 - **In your browser.** ASAP saves everything in the browser's storage. It works without signing in and without a connection.
-- **In your Google Drive** (coming soon). Sign in with Google, press **Sync**, and your document is saved as one file in your own Drive (folder `ASAP`, file `asap-data.json`). On another device, like your phone, sign in and press Sync to get it. ASAP only asks for access to files it creates (`drive.file`), so it can't see anything else in your Drive. If both sides changed, ASAP asks which one to keep. It never merges.
+- **In your Google Drive.** Sign in with Google, press **Sync**, and your document is saved as one file in your own Drive (folder `ASAP`, file `asap-data.json`). On another device, like your phone, sign in and press Sync to get it. ASAP only asks for access to files it creates (`drive.file`), so it can't see anything else in your Drive. If both sides changed, ASAP asks which one to keep. It never merges.
 - **Nowhere else.** There are no cookies, analytics or tracking. The details are on the app's Privacy page.
 
 Keep a downloaded copy now and then. ASAP comes as is, without warranty.

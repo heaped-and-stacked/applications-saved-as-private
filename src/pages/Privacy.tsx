@@ -22,7 +22,7 @@ export default function Privacy() {
         analytics, ads or tracking.
       </p>
 
-      <h2>Google Drive sync (coming soon)</h2>
+      <h2>Google Drive sync</h2>
       <ul>
         <li>
           After you sign in with Google, <strong>Sync</strong> saves your document as one file in your Google Drive

@@ -6,5 +6,5 @@ export const SITE = {
    * The OAuth client ID from Google Cloud, for Drive sync. Not a secret: it is
    * public in every web app that uses Google sign-in. Empty disables sign-in.
    */
-  googleClientId: '',
+  googleClientId: '998000574371-0s159ice1akc209ccanr3m0tbnhshps4.apps.googleusercontent.com',
 };

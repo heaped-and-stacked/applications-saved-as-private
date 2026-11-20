@@ -81,6 +81,15 @@ export function googleAuth(clientId: string): GoogleAuth {
         client_id: clientId,
         scope: SCOPE,
         callback: (response) => {
+          if (response.error === 'access_denied') {
+            // Also what Google answers to accounts that aren't invited while the app is in testing.
+            settle(
+              new Error(
+                "Google didn't allow the sign-in. While ASAP is in testing, only invited accounts can use Drive sync. Offline mode works for everyone.",
+              ),
+            );
+            return;
+          }
           if (response.error || !response.access_token) {
             settle(new Error(response.error_description || 'Google sign-in did not complete.'));
             return;
