@@ -8,8 +8,14 @@ import type { Remote, RemoteFile } from './remote';
 
 /** What this browser remembers about the last sync. */
 export interface SyncState {
-  /** The Google account the local copy belongs to. */
+  /** The Google account signed in now, or null when signed out. */
   account: string | null;
+  /**
+   * The account whose data this browser holds. Unlike account, it stays after
+   * signing out (unless the data is removed), so a later sign-in with another
+   * account is noticed.
+   */
+  owner: string | null;
   fileId: string | null;
   /** Drive's version of the file at the last sync. */
   version: string | null;
@@ -17,7 +23,7 @@ export interface SyncState {
   syncedHash: string | null;
 }
 
-export const NO_SYNC: SyncState = { account: null, fileId: null, version: null, syncedHash: null };
+export const NO_SYNC: SyncState = { account: null, owner: null, fileId: null, version: null, syncedHash: null };
 
 export interface Local {
   /** The document as JSON, ready to upload. */
@@ -37,6 +43,11 @@ export type Outcome =
 export interface Result {
   outcome: Outcome;
   state: SyncState;
+}
+
+/** True when this browser holds another account's data, and someone else just signed in. */
+export function isAccountSwitch(state: SyncState, account: string, local: Local): boolean {
+  return state.owner !== null && state.owner !== account && !local.empty;
 }
 
 /** True when the local copy changed since the last sync. */

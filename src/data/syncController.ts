@@ -1,11 +1,11 @@
 // Connects the sync logic (sync.ts) to the app: who is signed in, whether the
 // local copy has changes Drive doesn't have, and what to ask on a conflict.
 import { createMemo, createSignal, onSettled } from 'solid-js';
-import { readDocument } from './document';
+import { emptyDocument, readDocument, writeDocument } from './document';
 import { googleAuth, loadGoogle } from './google';
 import type { AsapDocument } from './model';
 import { driveRemote, type RemoteFile } from './remote';
-import { hashText, hasLocalChanges, keepLocal, keepRemote, NO_SYNC, sync, type Local, type SyncState } from './sync';
+import { hashText, hasLocalChanges, isAccountSwitch, keepLocal, keepRemote, NO_SYNC, sync, type Local, type SyncState } from './sync';
 
 const KEY = 'asap.sync';
 
@@ -17,6 +17,12 @@ export interface Conflict {
   local: { applications: number };
 }
 
+/** Someone signed in with a different account than the one whose data this browser holds. */
+export interface AccountSwitch {
+  previous: string;
+  next: string;
+}
+
 export interface Sync {
   /** False until a Google client ID is set (see site.ts). */
   available: boolean;
@@ -26,6 +32,10 @@ export interface Sync {
   /** True when the local copy has changes Drive doesn't have yet. */
   unsynced: () => boolean;
   conflict: () => Conflict | null;
+  accountSwitch: () => AccountSwitch | null;
+  /** After an account switch: remove this browser's data and load the new account's, or keep it. */
+  resolveAccountSwitch: (choice: 'remove' | 'keep') => Promise<void>;
+  cancelAccountSwitch: () => void;
   signIn: () => Promise<void>;
   syncNow: () => Promise<void>;
   resolve: (keep: 'local' | 'remote') => Promise<void>;
@@ -64,6 +74,7 @@ export function createSync(deps: Deps): Sync {
   const [state, setState] = createSignal<SyncState>(loadState());
   const [busy, setBusy] = createSignal(false);
   const [conflict, setConflict] = createSignal<Conflict | null>(null);
+  const [accountSwitch, setAccountSwitch] = createSignal<AccountSwitch | null>(null);
 
   const localHash = createMemo(() => contentHash(deps.doc()));
   const empty = createMemo(() => deps.doc().applications.length === 0);
@@ -114,30 +125,39 @@ export function createSync(deps: Deps): Sync {
     const copy = local();
     const localCount = deps.doc().applications.length;
     await run(async () => {
-      // Make sure the local copy belongs to the account signed in now.
       const account = await remote.account();
-      if (current.account !== account) {
-        current = { ...NO_SYNC, account };
-        save(current);
-      }
-      const result = await sync(remote, current, copy, hashOfJson);
-      const outcome = result.outcome;
-      if (outcome.kind === 'conflict') {
-        const remoteDoc = readDocument(JSON.parse(outcome.json)).document;
-        setConflict({
-          file: outcome.file,
-          json: outcome.json,
-          remote: { applications: remoteDoc.applications.length, savedAt: remoteDoc.savedAt },
-          local: { applications: localCount },
-        });
+      // This browser holds someone else's data: ask before anything moves.
+      if (isAccountSwitch(current, account, copy)) {
+        setAccountSwitch({ previous: current.owner!, next: account });
         return;
       }
-      if (outcome.kind === 'downloaded') {
-        deps.replace(outcome.json);
-        deps.notify('Loaded the latest data from Google Drive.');
+      if (current.account !== account) {
+        current = { ...NO_SYNC, account, owner: current.owner };
+        save(current);
       }
-      save(result.state);
+      await syncAs(account, current, copy, localCount);
     });
+  }
+
+  /** One sync for `account`, from the given state and local copy. */
+  async function syncAs(account: string, current: SyncState, copy: Local, localCount: number) {
+    const result = await sync(remote, current, copy, hashOfJson);
+    const outcome = result.outcome;
+    if (outcome.kind === 'conflict') {
+      const remoteDoc = readDocument(JSON.parse(outcome.json)).document;
+      setConflict({
+        file: outcome.file,
+        json: outcome.json,
+        remote: { applications: remoteDoc.applications.length, savedAt: remoteDoc.savedAt },
+        local: { applications: localCount },
+      });
+      return;
+    }
+    if (outcome.kind === 'downloaded') {
+      deps.replace(outcome.json);
+      deps.notify('Loaded the latest data from Google Drive.');
+    }
+    save({ ...result.state, owner: account });
   }
 
   return {
@@ -146,6 +166,21 @@ export function createSync(deps: Deps): Sync {
     busy,
     unsynced,
     conflict,
+    accountSwitch,
+    async resolveAccountSwitch(choice) {
+      const open = accountSwitch();
+      if (!open) return;
+      setAccountSwitch(null);
+      // Removing: the local copy becomes empty now, so build the empty copy
+      // directly (in Solid 2, store reads lag writes until the update applies).
+      const copy = choice === 'remove' ? emptyLocal() : local();
+      const localCount = choice === 'remove' ? 0 : deps.doc().applications.length;
+      if (choice === 'remove') deps.clear();
+      const fresh: SyncState = { ...NO_SYNC, account: open.next, owner: open.next };
+      save(fresh);
+      await run(() => syncAs(open.next, fresh, copy, localCount));
+    },
+    cancelAccountSwitch: () => setAccountSwitch(null),
     signIn: syncNow,
     syncNow,
     async resolve(keep) {
@@ -155,10 +190,10 @@ export function createSync(deps: Deps): Sync {
       const copy = local();
       await run(async () => {
         if (keep === 'local') {
-          save(await keepLocal(remote, current, open.file, copy));
+          save({ ...(await keepLocal(remote, current, open.file, copy)), owner: current.account });
         } else {
           deps.replace(open.json);
-          save(keepRemote(current, open.file, hashOfJson(open.json)));
+          save({ ...keepRemote(current, open.file, hashOfJson(open.json)), owner: current.account });
         }
         setConflict(null);
       });
@@ -166,10 +201,17 @@ export function createSync(deps: Deps): Sync {
     cancelConflict: () => setConflict(null),
     signOut(removeLocal) {
       auth?.forget();
-      save(NO_SYNC);
+      // Remember whose data stays here, so another account signing in later is asked first.
+      save({ ...NO_SYNC, owner: removeLocal ? null : state().owner });
       if (removeLocal) deps.clear();
     },
   };
+}
+
+/** The local copy as it is right after removing the data. */
+function emptyLocal(): Local {
+  const document = emptyDocument();
+  return { json: writeDocument(document), hash: contentHash(document), empty: true };
 }
 
 function loadState(): SyncState {

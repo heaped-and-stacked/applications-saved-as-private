@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Remote, RemoteFile } from './remote';
-import { hashText, keepLocal, NO_SYNC, sync, type Local, type SyncState } from './sync';
+import { hashText, isAccountSwitch, keepLocal, NO_SYNC, sync, type Local, type SyncState } from './sync';
 
 /** A Drive with at most one file, in memory. */
 function fakeDrive(initial?: string) {
@@ -109,5 +109,18 @@ describe('sync', () => {
     const result = await sync(drive.remote, NO_SYNC, local('B'), hashText);
     expect(result.outcome.kind).toBe('up-to-date');
     expect(result.state.fileId).toBe('f1');
+  });
+});
+
+describe('isAccountSwitch', () => {
+  it('notices another account signing in while this browser holds data', () => {
+    const state = { ...NO_SYNC, owner: 'a@example.com' };
+    expect(isAccountSwitch(state, 'b@example.com', local('A'))).toBe(true);
+    expect(isAccountSwitch(state, 'a@example.com', local('A'))).toBe(false);
+  });
+
+  it('does not ask when there is nothing local, or no known owner', () => {
+    expect(isAccountSwitch({ ...NO_SYNC, owner: 'a@example.com' }, 'b@example.com', local('empty'))).toBe(false);
+    expect(isAccountSwitch(NO_SYNC, 'b@example.com', local('A'))).toBe(false);
   });
 });

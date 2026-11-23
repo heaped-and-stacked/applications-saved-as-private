@@ -23,6 +23,10 @@ export default function Privacy() {
         your data, it keeps a few display choices, such as week or month in the calendar. There are no cookies,
         analytics, ads or tracking.
       </p>
+      <p>
+        Anyone using the same browser profile can open ASAP and see that data. On a shared computer, use separate browser
+        profiles, or sign out with "remove the data from this browser".
+      </p>
 
       <h2>Google Drive sync</h2>
       <ul>

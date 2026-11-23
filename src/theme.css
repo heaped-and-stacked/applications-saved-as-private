@@ -131,7 +131,8 @@ a.link:hover { text-decoration: underline; }
 .topbar-date { color: var(--muted); }
 .logo { flex: none; }
 .topbar-end { margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.topbar-end > * { white-space: nowrap; }
+/* Buttons keep their label on one line; pop-ups opened from here wrap normally. */
+.topbar-end > :not(dialog) { white-space: nowrap; }
 
 /* Where the data lives: local only, or synced to Drive. */
 .storage {

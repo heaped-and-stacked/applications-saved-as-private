@@ -68,6 +68,41 @@ export default function SyncControls() {
         />
       </Show>
 
+      <Show when={sync.accountSwitch()}>
+        {(change) => (
+          <Modal title="Data from another account" onClose={() => sync.cancelAccountSwitch()}>
+            <div class="form">
+              <p>
+                This browser holds data from <strong>{change().previous}</strong>, and you signed in as{' '}
+                <strong>{change().next}</strong>.
+              </p>
+              <p>
+                <strong>Remove it and load mine</strong> clears this browser and loads {change().next}'s data from
+                Google Drive. The other account's Drive file isn't touched.
+              </p>
+              <p class="muted">Keep it only if that data is yours too: it will then sync with {change().next}'s Drive.</p>
+              <div class="form-actions">
+                <button type="button" onClick={() => sync.cancelAccountSwitch()}>
+                  Cancel
+                </button>
+                <span class="spacer" />
+                <button type="button" disabled={sync.busy()} onClick={() => void sync.resolveAccountSwitch('keep')}>
+                  Keep it
+                </button>
+                <button
+                  type="button"
+                  class="primary"
+                  disabled={sync.busy()}
+                  onClick={() => void sync.resolveAccountSwitch('remove')}
+                >
+                  Remove it and load mine
+                </button>
+              </div>
+            </div>
+          </Modal>
+        )}
+      </Show>
+
       <Show when={sync.conflict()}>
         {(conflict) => (
           <Modal title="Changed on another device" onClose={() => sync.cancelConflict()}>

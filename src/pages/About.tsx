@@ -26,6 +26,10 @@ export default function About() {
         for access to the files it creates, so it can't see anything else in your Drive. Your data is never sent
         anywhere else. The details are on the <a class="link" href="/privacy">Privacy</a> page.
       </p>
+      <p>
+        On a shared computer, give each person their own browser profile, or sign out with "remove the data from this
+        browser" when you're done.
+      </p>
 
       <h2>Start</h2>
       <p>
