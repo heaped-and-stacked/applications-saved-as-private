@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readDocument } from './document';
-import { freeSlot, slotColor } from './color';
+import { appColor, CLOSED_COLOR, freeSlot, slotColor } from './color';
 
 const load = (applications: object[]) =>
   readDocument({ app: 'asap', version: 1, applications }).document.applications;
@@ -25,6 +25,15 @@ describe('colors', () => {
       { id: 'b', color: 1 },
     ]);
     expect(freeSlot(apps)).toBe(0);
+  });
+
+  it('shows closed applications in grey, active ones in their own color', () => {
+    const [active, closed] = load([
+      { id: 'a', color: 3 },
+      { id: 'b', color: 3, result: 'rejected' },
+    ]);
+    expect(appColor(active)).toBe(slotColor(3));
+    expect(appColor(closed)).toBe(CLOSED_COLOR);
   });
 
   it('gives different colors to the first 50 slots', () => {

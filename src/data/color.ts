@@ -7,16 +7,20 @@ import type { Application } from './model';
 // are CSS variables (--app-l0..2), darker in the light theme.
 //
 // A new application takes the first slot no ongoing application uses, so
-// slots of closed applications get reused. An application keeps its slot for
-// good: its color never changes once it is added.
+// slots of closed applications get reused. Closed applications show in grey,
+// so a reused color never appears twice. An application keeps its slot, unless
+// it reopens while another active application has taken it.
 const GOLDEN_ANGLE = 137.508;
 
 export function slotColor(slot: number): string {
   return `hsl(${(slot * GOLDEN_ANGLE) % 360} 60% var(--app-l${slot % 3}))`;
 }
 
+/** Closed applications are neutral grey: only active ones carry a color, so reused slots never show twice. */
+export const CLOSED_COLOR = 'var(--muted)';
+
 export function appColor(application: Application): string {
-  return slotColor(application.color);
+  return application.result === '' ? slotColor(application.color) : CLOSED_COLOR;
 }
 
 /** The first slot no ongoing application uses. */

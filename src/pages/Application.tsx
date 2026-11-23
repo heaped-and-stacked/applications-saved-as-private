@@ -5,7 +5,7 @@ import Modal from '../components/Modal';
 import Notes from '../components/Notes';
 import Stepper from '../components/Stepper';
 import Rounds from '../components/Rounds';
-import { appColor } from '../data/color';
+import { appColor, freeSlot } from '../data/color';
 import { DataContext } from '../data/store';
 import { RESULT_LABELS, WORK_MODE_LABELS, today, type Application, type Result } from '../data/model';
 import type { JSX } from '@solidjs/web';
@@ -34,9 +34,14 @@ function Details(props: { application: Application }) {
   const change = (edit: (app: Application) => void) => data.updateApplication(props.application.id, edit);
 
   function reopen() {
+    const { id, color } = props.application;
+    // Its color may have gone to an active application meanwhile: then it gets a free one.
+    const taken = data.doc.applications.some((a) => a.id !== id && a.result === '' && a.color === color);
+    const nextColor = taken ? freeSlot(data.doc.applications) : color;
     change((app) => {
       app.result = '';
       app.closedDate = '';
+      app.color = nextColor;
     });
   }
 
