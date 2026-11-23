@@ -1,0 +1,33 @@
+name: Report a bug
+description: Something in ASAP doesn't work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Issues are public. Please don't include your application data, names or other personal details.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to see it again
+      placeholder: |
+        1. ...
+        2. ...
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      placeholder: For example, Windows 11 and Chrome, or an Android phone and Firefox
+  - type: dropdown
+    id: signed-in
+    attributes:
+      label: Signed in with Google?
+      options:
+        - "No, offline mode"
+        - "Yes, using Drive sync"

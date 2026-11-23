@@ -10,6 +10,9 @@ export default function Document(props: ParentProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content="A job application tracker. Your data is one JSON file you own." />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        {/* The icon a phone uses when ASAP is added to the home screen. */}
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="theme-color" content="#15171c" />
         <title>ASAP</title>
       </head>
       <body>{props.children}</body>

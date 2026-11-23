@@ -1,0 +1,19 @@
+name: Suggest an idea
+description: Something that would make ASAP more useful to you.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: Issues are public. Please don't include your application data, names or other personal details.
+  - type: textarea
+    id: need
+    attributes:
+      label: What you'd like to do
+      description: The situation you're in, and what's missing or hard today.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: How it could work, if you have something in mind.

@@ -34,7 +34,7 @@ function TopBar() {
       <a href="/" class="brand">
         <Logo />
         <span>
-          ASAP <span class="brand-name">- Applications Saved as Private</span>
+          ASAP - Applications Saved as Private
         </span>
       </a>
       <span class="topbar-date">{formatToday()}</span>
@@ -42,17 +42,6 @@ function TopBar() {
         <SyncControls />
         <ThemeButton />
         <DataMenu />
-        <Show when={SITE.donateUrl}>
-          <a
-            class="button"
-            href={SITE.donateUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Buy me a coffee (opens in a new tab)"
-          >
-            ☕ Buy me a coffee
-          </a>
-        </Show>
       </div>
     </header>
   );
@@ -75,7 +64,11 @@ function Notice() {
 function Footer() {
   return (
     <footer class="footer">
+      <a href="/about">About</a>
       <a href="/privacy">Privacy</a>
+      <a href={SITE.feedbackUrl} target="_blank" rel="noopener noreferrer">
+        Feedback
+      </a>
       <Show when={SITE.donateUrl}>
         <a href={SITE.donateUrl} target="_blank" rel="noopener noreferrer">
           ☕ Buy me a coffee

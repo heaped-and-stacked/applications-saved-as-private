@@ -419,8 +419,13 @@ button.quiet:hover { color: var(--text); }
 .legal h2 { margin-top: 12px; }
 .legal ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
 
+/* On a phone: the full name on one row, a bit smaller, and the buttons in one compact row below. */
 @media (max-width: 640px) {
-  .brand-name, .topbar-date { display: none; }
+  .topbar { gap: 10px; }
+  .topbar-date { display: none; }
+  .brand { font-size: 15px; gap: 8px; white-space: nowrap; }
+  .topbar-end { margin-left: 0; width: 100%; gap: 6px; }
+  .topbar-end button, .topbar-end .storage { font-size: 12px; padding: 5px 9px; }
 }
 
 /* Last, so it overrides the calendar rules above. */
@@ -456,7 +461,7 @@ dialog::backdrop { background: rgba(7, 8, 10, 0.6); }
 .status.active { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
 .status.hired { color: var(--good); border-color: color-mix(in srgb, var(--good) 50%, var(--line)); }
 .status.rejected { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 50%, var(--line)); }
-.status.withdrew, .status.no-reply { color: var(--muted); }
+.status.withdrew, .status.no-reply, .status.position-closed { color: var(--muted); }
 
 /* A row of options to pick one from, as buttons (radio inputs underneath). */
 .choice { border: 0; padding: 0; margin: 0; }

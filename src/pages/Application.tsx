@@ -142,7 +142,7 @@ function Details(props: { application: Application }) {
   );
 }
 
-const ENDINGS: Exclude<Result, ''>[] = ['hired', 'rejected', 'withdrew', 'no-reply'];
+const ENDINGS: Exclude<Result, ''>[] = ['hired', 'rejected', 'withdrew', 'no-reply', 'position-closed'];
 
 /** The pop-up to close an application: how it ended, and when. */
 function CloseDialog(props: { onClose: () => void; onSave: (result: Result, date: string) => void }) {

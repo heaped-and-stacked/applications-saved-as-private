@@ -24,7 +24,7 @@ syncs it through the Google account you sign in with.
 - **Rounds**: screening, technical, offer, or other, with a date and time. After a round, a debrief: how it felt, how hard it was, what was asked and what you answered.
 - **Notes**: short, dated notes per application. How it started, what to prepare, anything to remember.
 - **Home**: active applications ordered by last activity, a calendar of rounds by week or month, and a short summary on top. Each application has its own color everywhere.
-- **Closing**: when an application ends, close it as hired, rejected, withdrew or no reply. It moves out of the way.
+- **Closing**: when an application ends, close it as hired, rejected, withdrew, no reply, or position closed (the role was filled or pulled). It moves out of the way.
 - **Your data, as a file**: download everything as one JSON file, and upload it back. This also imports exports from Job Hunt Command Center.
 - **Light and dark**, following your system setting.
 
@@ -52,6 +52,7 @@ npm test          # unit tests (Vitest)
 npm run check     # type check (TypeScript)
 npm run lint      # lint (oxlint with the Solid rules)
 npm run build     # static site in dist/client
+npm run verify    # all of the above, before pushing
 ```
 
 To keep dependencies current: `npm outdated` shows what's behind, `npm update` takes minor and patch versions.

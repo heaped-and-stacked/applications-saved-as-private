@@ -1,12 +1,14 @@
 import { Show } from 'solid-js';
 import { SITE } from '../site';
+import { formatDay } from '../format';
 
-// Keep this page true to what the app does. When something changes, the date changes.
+// Keep this page true to what the app does. The "Last updated" date comes from
+// git at build time (see vite.config.ts), so it follows every change to this file.
 export default function Privacy() {
   return (
     <article class="legal">
       <h1>Privacy</h1>
-      <p class="muted">Last updated: 20 November 2026</p>
+      <p class="muted">Last updated: {formatDay(__PRIVACY_UPDATED__)}</p>
 
       <h2>Your data stays with you</h2>
       <p>
@@ -36,6 +38,10 @@ export default function Privacy() {
         <li>
           You sign in on Google's own page. ASAP never sees your password, and gets only a short-lived permission to
           read and write its own file.
+        </li>
+        <li>
+          ASAP uses that file only to show your data back to you and keep your devices in step. It doesn't share it with
+          anyone, doesn't use it for ads, and doesn't keep a copy anywhere else.
         </li>
         <li>Your browser talks to Google directly. There is no ASAP server in between.</li>
         <li>
@@ -68,8 +74,23 @@ export default function Privacy() {
         a recent download if your data matters to you: ASAP comes as is, without warranty.
       </p>
 
-      <h2>Changes</h2>
-      <p>If this page changes, the date at the top changes too.</p>
+      <h2>Feedback</h2>
+      <p>
+        Bugs and ideas go to the project's{' '}
+        <a class="link" href={SITE.feedbackUrl} target="_blank" rel="noopener noreferrer">
+          GitHub issues
+        </a>
+        . Issues are public, so don't include your application data or other personal details. No GitHub account?
+        Email <a class="link" href={`mailto:${SITE.feedbackEmail}`}>{SITE.feedbackEmail}</a>.
+      </p>
+
+      <p class="muted">
+        Earlier versions of this page are in its{' '}
+        <a class="link" href={SITE.privacyHistoryUrl} target="_blank" rel="noopener noreferrer">
+          history on GitHub
+        </a>
+        .
+      </p>
     </article>
   );
 }

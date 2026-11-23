@@ -11,7 +11,12 @@
 export const FORMAT_VERSION = 1;
 
 /** How an application ended. Empty while it is ongoing. */
-export type Result = '' | 'hired' | 'rejected' | 'withdrew' | 'no-reply';
+/**
+ * How an application ended. Empty while it is ongoing. 'position-closed' is
+ * for an ending that isn't about you: the role was filled, the posting pulled,
+ * or hiring frozen.
+ */
+export type Result = '' | 'hired' | 'rejected' | 'withdrew' | 'no-reply' | 'position-closed';
 
 export type WorkMode = '' | 'remote' | 'hybrid' | 'onsite';
 
@@ -89,6 +94,7 @@ export const RESULT_LABELS: Record<Result, string> = {
   rejected: 'Rejected',
   withdrew: 'Withdrew',
   'no-reply': 'No reply',
+  'position-closed': 'Position closed',
 };
 
 export const WORK_MODE_LABELS: Record<WorkMode, string> = {
