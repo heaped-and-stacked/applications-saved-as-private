@@ -24,7 +24,7 @@ One person who looks for a job. This person follows many applications at the sam
 - Applications: details, the job listing, and fields that the user adds.
 - Rounds: type, date and time, outcome, and debrief.
 - Notes: dated notes for each application.
-- Home: active applications, closed applications, a summary, and a calendar of rounds.
+- Home: active applications with an Upcoming filter, closed applications, and a calendar of rounds.
 - Download and upload of the document, and import from Job Hunt Command Center.
 - Sync with the user's Google Drive. This is optional.
 

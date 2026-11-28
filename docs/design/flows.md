@@ -1,182 +1,98 @@
 # Flows
 
-## Screens
+## Home
 
-| Screen | Path | Content |
-|---|---|---|
-| Home | `/` | Summary (Active, Next round, This week, Gone quiet), Active list, Closed list (collapsed, 20 rows for each "Show more"), calendar (week or month). |
-| Application page | `/applications/:id` | Back link to Home, header (company, role, facts, stepper), Edit, Close application… or Reopen, upcoming rounds, past rounds, notes, listing (collapsed). |
-| About | `/about` | What ASAP is, where the data is, how to give feedback. |
-| Privacy | `/privacy` | The privacy policy. The "Last updated" date comes from git. |
-| Not found | other paths | A link to Home. |
+```text
+┌───────────────────────────────────────────────────────────────────┐
+│ ASAP   Sat 28 Nov        ● Synced  Sync  Sign out  ◐  ↓  ↑        │
+├──────────────────────────────┬────────────────────────────────────┤
+│ Active 12     [ Upcoming ]   │  Calendar            Week | Month  │
+│ + Add application            │                                    │
+│ ┃ Contoso Bank               │   Mon  Tue  Wed  Thu  Fri          │
+│ ┃ Backend Engineer           │   ■    ■         ■                 │
+│ ┃ Technical · tomorrow 14:00 │                                    │
+│ ┃ Litware                    │                                    │
+│ ┃ Screening on 3 Nov ·       │                                    │
+│ ┃   no debrief               │                                    │
+│ ┃ Next: Technical 1 Dec      │                                    │
+│ …                            │                                    │
+│ ▸ Closed 28                  │                                    │
+└──────────────────────────────┴────────────────────────────────────┘
+  About · Privacy · Feedback · Donate
+```
 
-### Top bar
+- **Active:** all active applications, the latest activity first. The bar at the left of a card is the application's color.
+- **Upcoming toggle on:** only applications with an upcoming round, the soonest round first. Each card shows that round.
+- **Closed:** collapsed. It shows 20 rows, and 20 more for each "Show more".
+- **Calendar:** rounds of all applications. Week view: hours 08–20. Month view: up to 3 entries for each day, then "+N more".
+- On a phone, the calendar goes below the lists.
 
-Logo (link to Home), today's date, sync status, Sync, Sign out, theme, Download, Upload.
+## Application page
 
-### Footer
+```text
+← Home
+Contoso Bank                                Edit   Close application…
+Backend Engineer · Cluj-Napoca · Hybrid · applied 2 Nov
+Applied ── Screening ── [Technical] ── Offer
 
-About, Privacy, Feedback, Donate.
+Upcoming rounds                                          + Add round
+  Technical · Tue 1 Dec 14:00 · Pending
+Past rounds
+  Screening · 10 Nov · Passed · felt 4/5
+Notes                                                     + Add note
+  25 Nov  Prepare system design.
+▸ Listing
+```
 
-### Pop-ups
+Upcoming rounds are first, the nearest first. Past rounds follow, the newest first. A closed application shows Reopen instead of Close application….
 
-| Pop-up | Opens from | Fields or content |
-|---|---|---|
-| Application | Add application, Edit | Company, role, location, work mode, applied date, link, extras, listing. Add only: first note. Edit only: Delete. Enter does not save. |
-| Round | Add round, a round | Type, day, time, outcome, felt, difficulty, questions, thoughts. |
-| Note | Add note, a note | Date, text. |
-| Close application | Close application… | The five results, the closed date. |
-| Close as Rejected | A round saved as Failed | Close as Rejected, Keep open. |
-| Conflict | Sync | Differences for each application. Keep this browser's, Keep Drive's, Cancel. |
-| Account switch | Sign in or Sync with another account | Remove local data, Keep local data, Cancel. |
-| Sign out | Sign out | Keep the data in this browser, or remove it. |
-| Welcome | First visit | What ASAP is, where the data is, Add application, Upload a file. |
+## Pop-ups
 
-### Empty states
-
-| Place | Text |
+| Pop-up | Content |
 |---|---|
-| Active list | No active applications. |
-| Closed list | Hidden when empty. |
-| Calendar | The grid shows with no entries. |
-| Rounds | No rounds yet. |
-| Notes | No notes yet. |
+| Application | Company, role, location, work mode, applied date, link, extras, listing. When adding: first note. When editing: Delete. Enter does not save. |
+| Round | Type, day, time, outcome, debrief. |
+| Note | Date, text. |
+| Close application | Result, closed date. |
+| Close as Rejected | Shows after a round is saved as Failed. Close as Rejected or Keep open. |
+| Welcome | First visit only: what ASAP is, where the data is, Add application, Upload. |
+| Conflict, Account switch, Sign out | See [Model: Sync](model.md#sync). |
 
-## First visit
+Empty lists show "No active applications.", "No rounds yet." or "No notes yet.". An empty Closed list is hidden.
 
-```mermaid
-flowchart TD
-    A[Open ASAP] --> B{Data in this browser?}
-    B -- Yes --> H[Home]
-    B -- No --> W[Welcome pop-up]
-    W -- Add application --> P[Application pop-up]
-    W -- Upload a file --> U[Upload]
-    W -- Sign in with Google --> S[Sign in]
-    W -- Close --> H
-    P --> H
-    U --> H
-    S --> D{File in Drive?}
-    D -- Yes --> R[Read Drive copy] --> H
-    D -- No --> H
-```
+## Steps
 
-The welcome pop-up shows one time for each browser. About shows the same text.
+**First visit:** Welcome → Add application, Upload, or Sign in with Google → Home.
 
-## Add an application
+**Add an application:** Add application → fill in → Save → application page. The application is at the top of Active.
+
+**Close and reopen:** Close application… → select the result → Close → grey, in Closed. Reopen → active again.
+
+**Before a round, on a phone:** Home → Upcoming on → open the first card → the round is at the top of the page.
+
+**Undo:** after Upload, a conflict choice, or the delete of an application, a message shows with Undo. Undo restores the copy from before.
+
+## After a round
 
 ```mermaid
-flowchart TD
-    H[Home] --> A[Add application]
-    A --> P[Application pop-up]
-    P -- Save --> N{Note written?}
-    N -- Yes --> C[Add application with note]
-    N -- No --> C2[Add application]
-    C --> AP[Application page]
-    C2 --> AP
-    P -- Cancel --> H
+flowchart LR
+    R[Open the round] --> D[Set outcome, write debrief] --> S[Save]
+    S -- Failed --> Q{Close as Rejected?}
+    Q -- Yes --> C([Closed: Rejected])
+    Q -- Keep open --> A([Active])
+    S -- other outcome --> A
 ```
 
-The new application gets the first free color slot and goes to the top of the Active list.
-
-## Plan and record a round
+## Sync
 
 ```mermaid
-flowchart TD
-    AP[Application page] --> R[Add round]
-    R --> F[Round pop-up: type, day, time]
-    F -- Save --> UP[Upcoming rounds]
-    UP -- after the round --> E[Open the round]
-    E --> D[Set outcome, write debrief]
-    D -- Save --> O{Outcome}
-    O -- Passed / Pending / Cancelled --> AP
-    O -- Failed --> Q[Close as Rejected pop-up]
-    Q -- Close as Rejected --> CL[Application closed, result Rejected]
-    Q -- Keep open --> AP
+flowchart LR
+    S[Sync] --> W{What changed?}
+    W -- nothing --> OK([Synced])
+    W -- one side --> CP[Copy it to the other side] --> OK
+    W -- both sides --> K[Conflict pop-up] -- keep one copy --> U[Message with Undo] --> OK
 ```
 
-A round without a day is in Upcoming rounds with "Not planned". Upcoming rounds are first on the page, with the nearest first. Past rounds follow, with the newest first.
+**New device:** sign in. If the browser has no data, the app reads the Drive copy. If Drive has no file, the app writes one. If both have data, the Conflict pop-up shows.
 
-## Close and reopen
-
-```mermaid
-flowchart TD
-    AP[Application page] --> C[Close application…]
-    C --> P[Close pop-up: result, closed date]
-    P -- Close --> X[Closed: grey, moves to Closed list]
-    P -- Cancel --> AP
-    X --> R[Reopen]
-    R --> A[Active: color slot back or first free slot]
-```
-
-## Before a round, on a phone
-
-```mermaid
-flowchart TD
-    H[Home] --> S[Summary: Next round]
-    S --> AP[Application page]
-    H --> C[Card: next round line] --> AP
-    AP --> U[Upcoming rounds at the top]
-    U --> L[Listing, notes, past debriefs]
-```
-
-## Sync on a new device
-
-```mermaid
-flowchart TD
-    A[Open ASAP] --> S[Sign in with Google]
-    S --> L{Data in this browser?}
-    L -- No --> D{File in Drive?}
-    D -- Yes --> R[Read Drive copy] --> OK[Synced]
-    D -- No --> W[Write a new file to Drive] --> OK
-    L -- Yes --> D2{File in Drive?}
-    D2 -- No --> W
-    D2 -- Yes --> C[Conflict pop-up]
-```
-
-## Conflict
-
-```mermaid
-flowchart TD
-    S[Sync] --> T{What changed since the last sync?}
-    T -- Nothing --> OK[Synced]
-    T -- This browser only --> W[Write to Drive] --> OK
-    T -- Drive only --> R[Read Drive copy] --> OK
-    T -- Both --> C[Conflict pop-up: differences for each application]
-    C -- Keep this browser's --> W2[Write to Drive. Keep Drive copy for Undo] --> M[Message with Undo]
-    C -- Keep Drive's --> R2[Read Drive copy. Keep browser copy for Undo] --> M
-    C -- Cancel --> N[Not synced]
-    M -- Undo --> B[Restore the kept copy. Not synced]
-    M -- no action --> OK
-```
-
-Upload and the delete of an application also keep the replaced copy and show a message with Undo.
-
-## Account switch
-
-```mermaid
-flowchart TD
-    S[Sign in or Sync] --> A{Same account as last sync?}
-    A -- Yes or no earlier sync --> N[Normal sync]
-    A -- No --> P[Account switch pop-up]
-    P -- Remove local data --> R[Read the new account's Drive copy]
-    P -- Keep local data --> C[Sync the local data with the new account]
-    P -- Cancel --> O[Signed out, data not changed]
-```
-
-## Several tabs
-
-```mermaid
-sequenceDiagram
-    participant A as Tab A
-    participant L as localStorage
-    participant B as Tab B
-    A->>L: Write asap.document
-    L-->>B: storage event
-    B->>B: Show the new document
-    A->>A: Sync
-    A->>L: Write asap.sync
-    L-->>B: storage event
-    B->>B: Show Synced
-```
-
-All tabs show the same data and the same sync state. A Sync in any tab syncs the same document.
+**Several tabs:** all tabs show the same data and the same sync state. A Sync in one tab updates all tabs.
